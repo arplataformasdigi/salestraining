@@ -1,4 +1,3 @@
-
 import React from "react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -129,7 +128,7 @@ const Dashboard: React.FC = () => {
                     }`}>
                       {activity.type === "simulation" && <FileText size={16} />}
                       {activity.type === "training" && <Book size={16} />}
-                      {activity.type === "assessment" && <ChartIcon size={16} />}
+                      {activity.type === "assessment" && <LineChart size={16} />}
                     </div>
                     <div>
                       <h3 className="font-medium">{activity.title}</h3>
