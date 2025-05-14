@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import CompanyLayout from "@/components/layouts/CompanyLayout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogOut, Shield, TwoFactorAuthentication } from "lucide-react";
+import { LogOut, Shield, Fingerprint } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -327,7 +326,7 @@ const CompanySettings: React.FC = () => {
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-start gap-3">
-                      <TwoFactorAuthentication className="h-5 w-5 text-gray-500 mt-0.5" />
+                      <Fingerprint className="h-5 w-5 text-gray-500 mt-0.5" />
                       <div>
                         <div className="font-medium">Autenticação de Dois Fatores</div>
                         <p className="text-sm text-gray-500">
