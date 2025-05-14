@@ -16,6 +16,13 @@ import Simulations from "./pages/Simulations";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 
+// Páginas da Empresa
+import CompanyDashboard from "./pages/company/Index";
+import CompanyCollaborators from "./pages/company/Collaborators";
+import CompanyTrainingPaths from "./pages/company/TrainingPaths";
+import CompanyInvites from "./pages/company/Invites";
+import CompanyAISimulations from "./pages/company/AISimulations";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -35,6 +42,14 @@ const App = () => (
             <Route path="/simulations" element={<Simulations />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
+            
+            {/* Rotas da Empresa */}
+            <Route path="/empresa" element={<CompanyDashboard />} />
+            <Route path="/empresa/colaboradores" element={<CompanyCollaborators />} />
+            <Route path="/empresa/trilhas" element={<CompanyTrainingPaths />} />
+            <Route path="/empresa/convites" element={<CompanyInvites />} />
+            <Route path="/empresa/simulacoes" element={<CompanyAISimulations />} />
+            
             {/* ADICIONE TODAS AS ROTAS PERSONALIZADAS ACIMA DA ROTA "*" */}
             <Route path="*" element={<NotFound />} />
           </Routes>

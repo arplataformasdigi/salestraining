@@ -20,27 +20,39 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 interface RegisterFormValues {
+  userType: "collaborator" | "company";
   name: string;
   email: string;
   password: string;
   confirmPassword: string;
+  companyName?: string;
 }
 
 const Register: React.FC = () => {
   const { register: registerUser, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
   const [isRegistering, setIsRegistering] = useState(false);
+  const [userType, setUserType] = useState<"collaborator" | "company">("collaborator");
 
   const form = useForm<RegisterFormValues>({
     defaultValues: {
+      userType: "collaborator",
       name: "",
       email: "",
       password: "",
       confirmPassword: "",
+      companyName: "",
     },
   });
 
@@ -55,7 +67,7 @@ const Register: React.FC = () => {
 
     setIsRegistering(true);
     try {
-      await registerUser(data.name, data.email, data.password);
+      await registerUser(data.name, data.email, data.password, data.userType, data.companyName);
       toast({
         title: "Cadastro realizado com sucesso",
         description: "Sua conta foi criada.",
@@ -72,7 +84,8 @@ const Register: React.FC = () => {
   };
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" />;
+    // Verificamos o tipo de usuário e redirecionamos adequadamente
+    return userType === "company" ? <Navigate to="/empresa" /> : <Navigate to="/dashboard" />;
   }
 
   return (
@@ -97,6 +110,35 @@ const Register: React.FC = () => {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                   control={form.control}
+                  name="userType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo de Usuário</FormLabel>
+                      <Select 
+                        onValueChange={(value: "collaborator" | "company") => {
+                          field.onChange(value);
+                          setUserType(value);
+                        }}
+                        defaultValue={field.value}
+                        disabled={isLoading || isRegistering}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o tipo de usuário" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="collaborator">Colaborador</SelectItem>
+                          <SelectItem value="company">Empresa</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
@@ -113,6 +155,27 @@ const Register: React.FC = () => {
                     </FormItem>
                   )}
                 />
+
+                {userType === "company" && (
+                  <FormField
+                    control={form.control}
+                    name="companyName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nome da Empresa</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Empresa S.A." 
+                            {...field} 
+                            required={userType === "company"}
+                            disabled={isLoading || isRegistering}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}

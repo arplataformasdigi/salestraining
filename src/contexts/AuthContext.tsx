@@ -5,9 +5,12 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: "admin" | "manager" | "collaborator";
+  role: "admin" | "manager" | "collaborator" | "company";
   company?: string;
   phone?: string;
+  status?: "active" | "inactive" | "pending";
+  companyName?: string;
+  userType?: "collaborator" | "company";
 }
 
 interface AuthContextType {
@@ -16,7 +19,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string, userType?: string, companyName?: string) => Promise<void>;
+  sendInvite: (email: string, role: string, trainingPaths?: string[]) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -48,7 +52,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: "user-123",
         name: "Demo User",
         email,
-        role: email.includes("admin") ? "admin" : "collaborator",
+        role: email.includes("admin") ? "admin" : email.includes("company") ? "company" : "collaborator",
+        userType: email.includes("company") ? "company" : "collaborator",
       } as User;
       
       setUser(mockUser);
@@ -68,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("user");
   };
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (name: string, email: string, password: string, userType: string = "collaborator", companyName?: string) => {
     setIsLoading(true);
     try {
       // In a real implementation, this would be an API call
@@ -79,7 +84,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: `user-${Date.now()}`,
         name,
         email,
-        role: "collaborator",
+        role: userType === "company" ? "company" : "collaborator",
+        userType: userType as "collaborator" | "company",
+        companyName,
       } as User;
       
       setUser(newUser);
@@ -87,12 +94,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem("user", JSON.stringify(newUser));
       
       // Here you would typically make an API call to register the user
-      console.log("User registered:", { name, email });
+      console.log("User registered:", { name, email, userType, companyName });
     } catch (error) {
       console.error("Registration failed:", error);
       throw error;
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const sendInvite = async (email: string, role: string, trainingPaths?: string[]) => {
+    try {
+      // Simulação de envio do convite
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log(`Convite enviado para ${email} com função ${role}`, trainingPaths ? `e trilhas: ${trainingPaths.join(', ')}` : '');
+      return Promise.resolve();
+    } catch (error) {
+      console.error("Falha ao enviar convite:", error);
+      throw error;
     }
   };
 
@@ -102,7 +121,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated,
     login,
     logout,
-    register
+    register,
+    sendInvite
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
