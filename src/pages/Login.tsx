@@ -48,9 +48,7 @@ const Login: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-primary">SalesTraining</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Faça login para acessar sua plataforma de treinamento de vendas com IA
-          </p>
+          <p className="mt-2 text-sm text-gray-600">Faça login para acessar sua plataforma de treinamento de vendas</p>
         </div>
 
         <Card>
