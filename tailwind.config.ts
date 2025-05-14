@@ -62,6 +62,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				'vende-c': {
+					primary: '#ff1f64',
+					black: '#000000',
+					gray: '#222222',
+					light: '#f5f5f5'
 				}
 			},
 			borderRadius: {

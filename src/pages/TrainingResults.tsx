@@ -1,30 +1,41 @@
 
 import React from "react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ThumbsUp, AlertTriangle, CheckCircle, Calendar, Clock } from "lucide-react";
+import { 
+  ThumbsUp, 
+  AlertTriangle, 
+  CheckCircle, 
+  Calendar, 
+  Clock,
+  ArrowRight
+} from "lucide-react";
 
 const TrainingResults: React.FC = () => {
   const mockResults = [
     {
       id: 1,
-      title: "Fundamentos de Vendas",
-      date: "15/05/2023",
-      duration: "45 min",
+      name: "João Silva",
+      email: "joao.silva@exemplo.com",
+      title: "Cold Call para Produto SaaS",
+      date: "12/05/2023",
+      time: "12:45",
       score: 85,
-      strengths: ["Conhecimento do produto", "Comunicação clara", "Identificação de necessidades"],
-      improvements: ["Fechamento de vendas", "Tratamento de objeções"],
+      strengths: ["Abordagem inicial", "Qualificação", "Estabelecimento de rapport"],
+      improvements: ["Lidar com objeções", "Fechamento"],
     },
     {
       id: 2,
-      title: "Técnicas Avançadas de Objeções",
-      date: "22/04/2023",
-      duration: "60 min",
+      name: "Maria Souza",
+      email: "maria.s@exemplo.com",
+      title: "Objeção de Preço",
+      date: "11/05/2023",
+      time: "09:20",
       score: 72,
-      strengths: ["Empatia", "Escuta ativa"],
-      improvements: ["Negociação", "Demonstração de valor"],
+      strengths: ["Empatia", "Conhecimento do produto"],
+      improvements: ["Negociação", "Diferenciação de valor"],
     }
   ];
 
@@ -33,43 +44,63 @@ const TrainingResults: React.FC = () => {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold">Resultados de Treinamentos</h1>
-          <p className="text-gray-600">Veja seus resultados nos treinamentos realizados</p>
+          <p className="text-gray-600">Veja os resultados das trilhas de treinamento realizadas</p>
         </div>
 
         <div className="space-y-6">
           {mockResults.map((result) => (
-            <Card key={result.id} className="overflow-hidden">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-lg">{result.title}</CardTitle>
-                  <Badge 
-                    variant={result.score >= 80 ? "default" : result.score >= 60 ? "secondary" : "destructive"}
-                    className="text-sm"
-                  >
-                    {result.score}%
-                  </Badge>
-                </div>
-                <div className="flex items-center space-x-4 text-sm text-gray-500 mt-2">
-                  <div className="flex items-center">
-                    <Calendar size={14} className="mr-1" />
-                    <span>{result.date}</span>
+            <Card key={result.id} className="overflow-hidden shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-lg font-bold">{result.name}</h3>
+                      <Badge 
+                        className={`${
+                          result.score >= 80 
+                            ? "bg-green-100 text-green-800" 
+                            : result.score >= 60 
+                              ? "bg-yellow-100 text-yellow-800" 
+                              : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {result.score}%
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-500">{result.email}</p>
                   </div>
-                  <div className="flex items-center">
-                    <Clock size={14} className="mr-1" />
-                    <span>{result.duration}</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Cenário</p>
+                    <p className="font-medium">{result.title}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Data e Duração</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center">
+                        <Calendar size={14} className="mr-1" />
+                        <span>{result.date}</span>
+                      </div>
+                      <span>•</span>
+                      <div className="flex items-center">
+                        <Clock size={14} className="mr-1" />
+                        <span>{result.time}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                   <div>
                     <div className="flex items-start gap-2">
                       <ThumbsUp size={18} className="text-green-500 mt-1" />
                       <div>
-                        <h4 className="font-medium text-sm">Pontos fortes</h4>
+                        <p className="font-medium text-sm">Pontos fortes</p>
                         <ul className="text-sm mt-1 list-disc list-inside">
                           {result.strengths.map((strength, idx) => (
-                            <li key={idx}>{strength}</li>
+                            <li key={idx} className="text-gray-700">{strength}</li>
                           ))}
                         </ul>
                       </div>
@@ -80,18 +111,21 @@ const TrainingResults: React.FC = () => {
                     <div className="flex items-start gap-2">
                       <AlertTriangle size={18} className="text-amber-500 mt-1" />
                       <div>
-                        <h4 className="font-medium text-sm">Oportunidades de melhoria</h4>
+                        <p className="font-medium text-sm">Oportunidades de melhoria</p>
                         <ul className="text-sm mt-1 list-disc list-inside">
                           {result.improvements.map((improvement, idx) => (
-                            <li key={idx}>{improvement}</li>
+                            <li key={idx} className="text-gray-700">{improvement}</li>
                           ))}
                         </ul>
                       </div>
                     </div>
                   </div>
-                  
-                  <Button variant="outline" className="w-full">
-                    <CheckCircle size={16} className="mr-2" /> Ver detalhes completos
+                </div>
+                
+                <div className="mt-4 pt-3 border-t">
+                  <Button variant="outline" className="text-primary hover:text-primary hover:bg-primary/5 transition-colors">
+                    <span>Ver detalhes completos</span>
+                    <ArrowRight size={16} />
                   </Button>
                 </div>
               </CardContent>
