@@ -17,13 +17,13 @@ const Sidebar: React.FC = () => {
   const navItems = [
     { name: "Dashboard", path: "/dashboard", icon: LineChart },
     ...(isAdmin 
-      ? [{ name: "Collaborators", path: "/collaborators", icon: Users }] 
+      ? [{ name: "Colaboradores", path: "/collaborators", icon: Users }] 
       : []
     ),
-    { name: "Training Paths", path: "/training-paths", icon: Book },
-    { name: "Simulations", path: "/simulations", icon: FileText },
-    { name: "My Profile", path: "/profile", icon: User },
-    { name: "Settings", path: "/settings", icon: Settings },
+    { name: "Trilhas de Treinamento", path: "/training-paths", icon: Book },
+    { name: "Simulações", path: "/simulations", icon: FileText },
+    { name: "Meu Perfil", path: "/profile", icon: User },
+    { name: "Configurações", path: "/settings", icon: Settings },
   ];
 
   return (
@@ -77,7 +77,10 @@ const Sidebar: React.FC = () => {
             {!collapsed && (
               <div className="ml-3 overflow-hidden">
                 <p className="text-sm font-medium truncate">{user?.name}</p>
-                <p className="text-xs text-gray-500 truncate capitalize">{user?.role}</p>
+                <p className="text-xs text-gray-500 truncate capitalize">
+                  {user?.role === "admin" ? "Administrador" : 
+                   user?.role === "manager" ? "Gerente" : "Colaborador"}
+                </p>
               </div>
             )}
           </div>

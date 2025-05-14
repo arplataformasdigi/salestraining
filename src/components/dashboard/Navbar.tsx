@@ -11,8 +11,8 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout();
     toast({
-      title: "Logged out successfully",
-      description: "You have been logged out of your account.",
+      title: "Logout realizado com sucesso",
+      description: "Você saiu da sua conta.",
     });
   };
 
@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Pesquisar..."
               className="pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
             />
           </div>
@@ -44,7 +44,10 @@ const Navbar: React.FC = () => {
           <div className="flex items-center gap-3">
             <div className="hidden md:block text-right">
               <p className="text-sm font-medium">{user?.name}</p>
-              <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+              <p className="text-xs text-gray-500 capitalize">
+                {user?.role === "admin" ? "Administrador" : 
+                 user?.role === "manager" ? "Gerente" : "Colaborador"}
+              </p>
             </div>
 
             <div className="relative group">
@@ -55,16 +58,16 @@ const Navbar: React.FC = () => {
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all z-10">
                 <div className="py-2">
                   <a href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    My Profile
+                    Meu Perfil
                   </a>
                   <a href="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Settings
+                    Configurações
                   </a>
                   <button 
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                   >
-                    Sign out
+                    Sair
                   </button>
                 </div>
               </div>

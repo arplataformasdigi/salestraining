@@ -35,7 +35,7 @@ const App = () => (
             <Route path="/simulations" element={<Simulations />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            {/* ADICIONE TODAS AS ROTAS PERSONALIZADAS ACIMA DA ROTA "*" */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

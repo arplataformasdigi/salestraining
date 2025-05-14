@@ -33,55 +33,55 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Search, Edit, Trash, Mail } from "lucide-react";
 
-// Mock data for collaborators
+// Dados simulados para colaboradores
 const mockCollaborators = [
   {
     id: "user-1",
-    name: "John Smith",
-    email: "john.smith@example.com",
+    name: "João Silva",
+    email: "joao.silva@exemplo.com",
     company: "Sales Pro Inc.",
     role: "collaborator",
-    phone: "+1 (555) 123-4567",
+    phone: "+55 (11) 98765-4321",
     status: "active",
     joinedDate: "2023-01-15",
   },
   {
     id: "user-2",
-    name: "Sarah Johnson",
-    email: "sarah.j@example.com",
+    name: "Maria Souza",
+    email: "maria.s@exemplo.com",
     company: "Sales Pro Inc.",
     role: "collaborator",
-    phone: "+1 (555) 987-6543",
+    phone: "+55 (11) 91234-5678",
     status: "active",
     joinedDate: "2023-02-03",
   },
   {
     id: "user-3",
-    name: "Michael Wong",
-    email: "m.wong@example.com",
+    name: "Carlos Oliveira",
+    email: "c.oliveira@exemplo.com",
     company: "Sales Pro Inc.",
     role: "manager",
-    phone: "+1 (555) 246-8102",
+    phone: "+55 (11) 92468-1357",
     status: "active",
     joinedDate: "2023-01-10",
   },
   {
     id: "user-4",
-    name: "Emily Davis",
-    email: "emily.d@example.com",
+    name: "Ana Ferreira",
+    email: "ana.f@exemplo.com",
     company: "Sales Pro Inc.",
     role: "collaborator",
-    phone: "+1 (555) 369-8520",
+    phone: "+55 (11) 93698-5214",
     status: "inactive",
     joinedDate: "2023-03-22",
   },
   {
     id: "user-5",
-    name: "Robert Chen",
-    email: "r.chen@example.com",
+    name: "Roberto Santos",
+    email: "r.santos@exemplo.com",
     company: "Sales Pro Inc.",
     role: "collaborator",
-    phone: "+1 (555) 741-9632",
+    phone: "+55 (11) 97531-4628",
     status: "pending",
     joinedDate: "2023-04-15",
   },
@@ -128,7 +128,7 @@ const Collaborators: React.FC = () => {
     e.preventDefault();
     
     if (editingId) {
-      // Update existing collaborator
+      // Atualizar colaborador existente
       setCollaborators(
         collaborators.map((collab) =>
           collab.id === editingId
@@ -140,11 +140,11 @@ const Collaborators: React.FC = () => {
         )
       );
       toast({
-        title: "Collaborator updated",
-        description: `${formData.name}'s information has been updated.`,
+        title: "Colaborador atualizado",
+        description: `As informações de ${formData.name} foram atualizadas.`,
       });
     } else {
-      // Add new collaborator
+      // Adicionar novo colaborador
       const newCollaborator = {
         id: `user-${Date.now()}`,
         ...formData,
@@ -153,12 +153,12 @@ const Collaborators: React.FC = () => {
       };
       setCollaborators([...collaborators, newCollaborator]);
       toast({
-        title: "Invitation sent",
-        description: `Invitation email has been sent to ${formData.email}.`,
+        title: "Convite enviado",
+        description: `Um email de convite foi enviado para ${formData.email}.`,
       });
     }
 
-    // Reset form and close dialog
+    // Resetar formulário e fechar diálogo
     setFormData({
       name: "",
       email: "",
@@ -189,16 +189,16 @@ const Collaborators: React.FC = () => {
     const collaborator = collaborators.find((c) => c.id === id);
     setCollaborators(collaborators.filter((c) => c.id !== id));
     toast({
-      title: "Collaborator removed",
-      description: `${collaborator?.name} has been removed from the system.`,
+      title: "Colaborador removido",
+      description: `${collaborator?.name} foi removido do sistema.`,
     });
   };
 
   const handleInvite = (id: string) => {
     const collaborator = collaborators.find((c) => c.id === id);
     toast({
-      title: "Invitation resent",
-      description: `A new invitation has been sent to ${collaborator?.email}.`,
+      title: "Convite reenviado",
+      description: `Um novo convite foi enviado para ${collaborator?.email}.`,
     });
   };
 
@@ -215,11 +215,24 @@ const Collaborators: React.FC = () => {
     }
   };
 
+  const translateStatus = (status: string) => {
+    switch (status) {
+      case "active":
+        return "ativo";
+      case "inactive":
+        return "inativo";
+      case "pending":
+        return "pendente";
+      default:
+        return status;
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Collaborators</h1>
+          <h1 className="text-2xl font-bold">Colaboradores</h1>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
@@ -233,56 +246,56 @@ const Collaborators: React.FC = () => {
                   role: "collaborator",
                 });
               }}>
-                <Plus className="mr-2 h-4 w-4" /> Add Collaborator
+                <Plus className="mr-2 h-4 w-4" /> Adicionar Colaborador
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>
-                  {editingId ? "Edit Collaborator" : "Add New Collaborator"}
+                  {editingId ? "Editar Colaborador" : "Adicionar Novo Colaborador"}
                 </DialogTitle>
                 <DialogDescription>
                   {editingId
-                    ? "Edit the collaborator's information below."
-                    : "Add details to invite a new collaborator to the platform."}
+                    ? "Edite as informações do colaborador abaixo."
+                    : "Adicione detalhes para convidar um novo colaborador para a plataforma."}
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name">Nome Completo</Label>
                   <Input
                     id="name"
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="John Smith"
+                    placeholder="João Silva"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
+                  <Label htmlFor="email">Endereço de Email</Label>
                   <Input
                     id="email"
                     name="email"
                     type="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="john.smith@example.com"
+                    placeholder="joao.silva@exemplo.com"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
+                  <Label htmlFor="phone">Número de Telefone</Label>
                   <Input
                     id="phone"
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="+1 (555) 123-4567"
+                    placeholder="+55 (11) 98765-4321"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="role">Role</Label>
+                  <Label htmlFor="role">Função</Label>
                   <select
                     id="role"
                     name="role"
@@ -291,14 +304,14 @@ const Collaborators: React.FC = () => {
                     onChange={handleInputChange}
                     required
                   >
-                    <option value="collaborator">Collaborator</option>
-                    <option value="manager">Manager</option>
-                    {user?.role === "admin" && <option value="admin">Admin</option>}
+                    <option value="collaborator">Colaborador</option>
+                    <option value="manager">Gerente</option>
+                    {user?.role === "admin" && <option value="admin">Administrador</option>}
                   </select>
                 </div>
                 <DialogFooter>
                   <Button type="submit">
-                    {editingId ? "Update" : "Send Invitation"}
+                    {editingId ? "Atualizar" : "Enviar Convite"}
                   </Button>
                 </DialogFooter>
               </form>
@@ -308,14 +321,14 @@ const Collaborators: React.FC = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Manage Collaborators</CardTitle>
+            <CardTitle>Gerenciar Colaboradores</CardTitle>
             <CardDescription>
-              Manage team members and their access to the platform.
+              Gerencie membros da equipe e seus acessos à plataforma.
             </CardDescription>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
               <Input
-                placeholder="Search by name or email..."
+                placeholder="Buscar por nome ou email..."
                 className="pl-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -327,19 +340,19 @@ const Collaborators: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
+                    <TableHead>Nome</TableHead>
                     <TableHead>Email</TableHead>
-                    <TableHead>Role</TableHead>
+                    <TableHead>Função</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Joined Date</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>Data de Entrada</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredCollaborators.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                        No collaborators found
+                        Nenhum colaborador encontrado
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -347,18 +360,21 @@ const Collaborators: React.FC = () => {
                       <TableRow key={collaborator.id}>
                         <TableCell className="font-medium">{collaborator.name}</TableCell>
                         <TableCell>{collaborator.email}</TableCell>
-                        <TableCell className="capitalize">{collaborator.role}</TableCell>
+                        <TableCell className="capitalize">
+                          {collaborator.role === "collaborator" ? "Colaborador" : 
+                           collaborator.role === "manager" ? "Gerente" : "Administrador"}
+                        </TableCell>
                         <TableCell>
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor(
                               collaborator.status
                             )}`}
                           >
-                            {collaborator.status}
+                            {translateStatus(collaborator.status)}
                           </span>
                         </TableCell>
                         <TableCell>
-                          {new Date(collaborator.joinedDate).toLocaleDateString()}
+                          {new Date(collaborator.joinedDate).toLocaleDateString('pt-BR')}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
@@ -367,7 +383,7 @@ const Collaborators: React.FC = () => {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleInvite(collaborator.id)}
-                                title="Resend Invitation"
+                                title="Reenviar Convite"
                               >
                                 <Mail size={16} />
                               </Button>

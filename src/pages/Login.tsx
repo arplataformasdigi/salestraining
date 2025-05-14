@@ -43,13 +43,13 @@ const Login: React.FC = () => {
     try {
       await login(data.email, data.password);
       toast({
-        title: "Login successful",
-        description: "You are now logged in to your account.",
+        title: "Login realizado com sucesso",
+        description: "Você está conectado à sua conta.",
       });
     } catch (error) {
       toast({
-        title: "Login failed",
-        description: "Please check your credentials and try again.",
+        title: "Falha no login",
+        description: "Por favor, verifique suas credenciais e tente novamente.",
         variant: "destructive",
       });
     }
@@ -65,15 +65,15 @@ const Login: React.FC = () => {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-primary">SalesTrainAI</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Log in to access your AI-powered sales training platform
+            Faça login para acessar sua plataforma de treinamento de vendas com IA
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Log in to your account</CardTitle>
+            <CardTitle>Entre na sua conta</CardTitle>
             <CardDescription>
-              Enter your email and password to access your dashboard
+              Digite seu e-mail e senha para acessar seu painel
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -84,10 +84,10 @@ const Login: React.FC = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>E-mail</FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="you@example.com" 
+                          placeholder="voce@exemplo.com" 
                           type="email" 
                           {...field} 
                           required
@@ -104,7 +104,7 @@ const Login: React.FC = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>Senha</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="••••••••" 
@@ -127,10 +127,10 @@ const Login: React.FC = () => {
                   {isLoading ? (
                     <div className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
-                      Logging in...
+                      Entrando...
                     </div>
                   ) : (
-                    "Log in"
+                    "Entrar"
                   )}
                 </Button>
               </form>
@@ -139,13 +139,13 @@ const Login: React.FC = () => {
           <CardFooter className="flex flex-col space-y-2">
             <div className="text-center text-sm">
               <Link to="/forgot-password" className="text-primary hover:underline">
-                Forgot your password?
+                Esqueceu sua senha?
               </Link>
             </div>
             <div className="text-center text-sm">
-              Don't have an account? &nbsp;
+              Não tem uma conta? &nbsp;
               <Link to="/register" className="text-primary hover:underline">
-                Sign up
+                Cadastre-se
               </Link>
             </div>
           </CardFooter>

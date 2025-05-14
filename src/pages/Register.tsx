@@ -48,7 +48,7 @@ const Register: React.FC = () => {
     if (data.password !== data.confirmPassword) {
       form.setError("confirmPassword", { 
         type: "manual", 
-        message: "Passwords don't match" 
+        message: "As senhas não coincidem" 
       });
       return;
     }
@@ -57,13 +57,13 @@ const Register: React.FC = () => {
     try {
       await registerUser(data.name, data.email, data.password);
       toast({
-        title: "Registration successful",
-        description: "Your account has been created.",
+        title: "Cadastro realizado com sucesso",
+        description: "Sua conta foi criada.",
       });
     } catch (error) {
       toast({
-        title: "Registration failed",
-        description: "There was a problem creating your account.",
+        title: "Falha no cadastro",
+        description: "Ocorreu um problema ao criar sua conta.",
         variant: "destructive",
       });
     } finally {
@@ -81,15 +81,15 @@ const Register: React.FC = () => {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-primary">SalesTrainAI</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Create an account to start your AI-powered sales training
+            Crie uma conta para iniciar seu treinamento de vendas com IA
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Create your account</CardTitle>
+            <CardTitle>Crie sua conta</CardTitle>
             <CardDescription>
-              Enter your information to sign up
+              Digite suas informações para se cadastrar
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -100,10 +100,10 @@ const Register: React.FC = () => {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel>Nome Completo</FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="John Doe" 
+                          placeholder="João Silva" 
                           {...field} 
                           required
                           disabled={isLoading || isRegistering}
@@ -119,10 +119,10 @@ const Register: React.FC = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>E-mail</FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="you@example.com" 
+                          placeholder="voce@exemplo.com" 
                           type="email" 
                           {...field} 
                           required
@@ -139,7 +139,7 @@ const Register: React.FC = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>Senha</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="••••••••" 
@@ -160,7 +160,7 @@ const Register: React.FC = () => {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
+                      <FormLabel>Confirmar Senha</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="••••••••" 
@@ -183,10 +183,10 @@ const Register: React.FC = () => {
                   {isRegistering ? (
                     <div className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
-                      Creating Account...
+                      Criando Conta...
                     </div>
                   ) : (
-                    "Sign Up"
+                    "Cadastrar"
                   )}
                 </Button>
               </form>
@@ -194,9 +194,9 @@ const Register: React.FC = () => {
           </CardContent>
           <CardFooter className="flex justify-center">
             <div className="text-center text-sm">
-              Already have an account? &nbsp;
+              Já tem uma conta? &nbsp;
               <Link to="/login" className="text-primary hover:underline">
-                Log in
+                Entrar
               </Link>
             </div>
           </CardFooter>
