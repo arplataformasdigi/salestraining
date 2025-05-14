@@ -99,10 +99,37 @@ const mockTrainingPaths = [
   }
 ];
 
+// Dados simulados para módulos
+const mockModules = {
+  1: [
+    { id: 101, title: "Introdução às Vendas", type: "lesson", duration: "45 min" },
+    { id: 102, title: "Abordagem ao Cliente", type: "lesson", duration: "60 min" },
+    { id: 103, title: "Simulação: Primeiro Contato", type: "simulation", duration: "30 min" },
+    { id: 104, title: "Apresentação do Produto", type: "lesson", duration: "60 min" },
+    { id: 105, title: "Avaliação Final", type: "assessment", duration: "45 min" }
+  ],
+  2: [
+    { id: 201, title: "Tipos de Objeções", type: "lesson", duration: "45 min" },
+    { id: 202, title: "Estratégias de Resposta", type: "lesson", duration: "60 min" },
+    { id: 203, title: "Prática: Respostas a Objeções", type: "simulation", duration: "45 min" }
+  ],
+  4: [
+    { id: 401, title: "Técnicas de Fechamento", type: "lesson", duration: "60 min" },
+    { id: 402, title: "Negociação de Preço", type: "lesson", duration: "45 min" },
+    { id: 403, title: "Simulação: Fechamento de Venda", type: "simulation", duration: "30 min" }
+  ]
+};
+
 interface TrainingPathFormData {
   title: string;
   description: string;
   status: "active" | "draft" | "archived";
+}
+
+interface ModuleFormData {
+  title: string;
+  type: "lesson" | "simulation" | "assessment";
+  duration: string;
 }
 
 const CompanyTrainingPaths: React.FC = () => {
@@ -114,8 +141,17 @@ const CompanyTrainingPaths: React.FC = () => {
     description: "",
     status: "draft"
   });
+  const [moduleFormData, setModuleFormData] = useState<ModuleFormData>({
+    title: "",
+    type: "lesson",
+    duration: ""
+  });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isModuleDialogOpen, setIsModuleDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [currentPathId, setCurrentPathId] = useState<number | null>(null);
+  const [editingModuleId, setEditingModuleId] = useState<number | null>(null);
+  const [viewingModules, setViewingModules] = useState<number | null>(null);
 
   const filteredPaths = filter === "all" 
     ? trainingPaths 
@@ -124,6 +160,11 @@ const CompanyTrainingPaths: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleModuleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setModuleFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -174,6 +215,58 @@ const CompanyTrainingPaths: React.FC = () => {
     setIsDialogOpen(false);
   };
 
+  const handleModuleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!currentPathId) return;
+    
+    const pathModules = mockModules[currentPathId as keyof typeof mockModules] || [];
+    
+    if (editingModuleId) {
+      // Atualizar módulo existente
+      const updatedModules = pathModules.map(module => 
+        module.id === editingModuleId 
+          ? { ...module, ...moduleFormData }
+          : module
+      );
+      
+      mockModules[currentPathId as keyof typeof mockModules] = updatedModules;
+      
+      toast({
+        title: "Módulo atualizado",
+        description: `O módulo "${moduleFormData.title}" foi atualizado.`,
+      });
+    } else {
+      // Adicionar novo módulo
+      const newModule = {
+        id: Date.now(),
+        ...moduleFormData
+      };
+      
+      if (!mockModules[currentPathId as keyof typeof mockModules]) {
+        mockModules[currentPathId as keyof typeof mockModules] = [];
+      }
+      
+      mockModules[currentPathId as keyof typeof mockModules].push(newModule);
+      
+      // Atualizar contagem de módulos na trilha
+      setTrainingPaths(trainingPaths.map(path => 
+        path.id === currentPathId
+          ? { ...path, modules: path.modules + 1 }
+          : path
+      ));
+      
+      toast({
+        title: "Módulo adicionado",
+        description: `O módulo "${moduleFormData.title}" foi adicionado à trilha.`,
+      });
+    }
+
+    // Resetar formulário e fechar diálogo
+    resetModuleForm();
+    setIsModuleDialogOpen(false);
+  };
+
   const resetForm = () => {
     setFormData({
       title: "",
@@ -181,6 +274,15 @@ const CompanyTrainingPaths: React.FC = () => {
       status: "draft"
     });
     setEditingId(null);
+  };
+
+  const resetModuleForm = () => {
+    setModuleFormData({
+      title: "",
+      type: "lesson",
+      duration: ""
+    });
+    setEditingModuleId(null);
   };
 
   const handleEdit = (id: number) => {
@@ -196,6 +298,29 @@ const CompanyTrainingPaths: React.FC = () => {
     }
   };
 
+  const handleEditModule = (pathId: number, moduleId: number) => {
+    const pathModules = mockModules[pathId as keyof typeof mockModules] || [];
+    const module = pathModules.find(m => m.id === moduleId);
+    
+    if (module) {
+      setModuleFormData({
+        title: module.title,
+        type: module.type as "lesson" | "simulation" | "assessment",
+        duration: module.duration
+      });
+      setCurrentPathId(pathId);
+      setEditingModuleId(moduleId);
+      setIsModuleDialogOpen(true);
+    }
+  };
+
+  const handleAddModule = (pathId: number) => {
+    setCurrentPathId(pathId);
+    setEditingModuleId(null);
+    resetModuleForm();
+    setIsModuleDialogOpen(true);
+  };
+
   const handleDelete = (id: number) => {
     const path = trainingPaths.find((p) => p.id === id);
     setTrainingPaths(trainingPaths.filter((p) => p.id !== id));
@@ -203,6 +328,28 @@ const CompanyTrainingPaths: React.FC = () => {
       title: "Trilha removida",
       description: `A trilha "${path?.title}" foi removida do sistema.`,
     });
+  };
+
+  const handleDeleteModule = (pathId: number, moduleId: number) => {
+    const pathModules = mockModules[pathId as keyof typeof mockModules] || [];
+    const module = pathModules.find(m => m.id === moduleId);
+    
+    if (module) {
+      // Remover o módulo
+      mockModules[pathId as keyof typeof mockModules] = pathModules.filter(m => m.id !== moduleId);
+      
+      // Atualizar contagem de módulos na trilha
+      setTrainingPaths(trainingPaths.map(path => 
+        path.id === pathId
+          ? { ...path, modules: Math.max(0, path.modules - 1) }
+          : path
+      ));
+      
+      toast({
+        title: "Módulo removido",
+        description: `O módulo "${module.title}" foi removido da trilha.`,
+      });
+    }
   };
 
   const handleStatusChange = (id: number, status: "active" | "draft" | "archived") => {
@@ -229,6 +376,10 @@ const CompanyTrainingPaths: React.FC = () => {
     });
   };
 
+  const handleOpenModules = (pathId: number) => {
+    setViewingModules(viewingModules === pathId ? null : pathId);
+  };
+
   const statusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -252,6 +403,19 @@ const CompanyTrainingPaths: React.FC = () => {
         return "arquivada";
       default:
         return status;
+    }
+  };
+
+  const translateModuleType = (type: string) => {
+    switch (type) {
+      case "lesson":
+        return "Aula";
+      case "simulation":
+        return "Simulação";
+      case "assessment":
+        return "Avaliação";
+      default:
+        return type;
     }
   };
 
@@ -330,6 +494,72 @@ const CompanyTrainingPaths: React.FC = () => {
               </form>
             </DialogContent>
           </Dialog>
+
+          {/* Modal para adicionar/editar módulos */}
+          <Dialog open={isModuleDialogOpen} onOpenChange={(open) => {
+            setIsModuleDialogOpen(open);
+            if (!open) resetModuleForm();
+          }}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingModuleId ? "Editar Módulo" : "Adicionar Novo Módulo"}
+                </DialogTitle>
+                <DialogDescription>
+                  {editingModuleId
+                    ? "Edite os detalhes deste módulo."
+                    : "Preencha as informações para adicionar um novo módulo à trilha."}
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleModuleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Título</Label>
+                  <Input
+                    id="title"
+                    name="title"
+                    value={moduleFormData.title}
+                    onChange={handleModuleInputChange}
+                    placeholder="Nome do módulo"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="type">Tipo</Label>
+                  <select
+                    id="type"
+                    name="type"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                    value={moduleFormData.type}
+                    onChange={handleModuleInputChange}
+                    required
+                  >
+                    <option value="lesson">Aula</option>
+                    <option value="simulation">Simulação</option>
+                    <option value="assessment">Avaliação</option>
+                  </select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="duration">Duração</Label>
+                  <Input
+                    id="duration"
+                    name="duration"
+                    value={moduleFormData.duration}
+                    onChange={handleModuleInputChange}
+                    placeholder="ex: 45 min"
+                    required
+                  />
+                </div>
+
+                <DialogFooter>
+                  <Button type="submit">
+                    {editingModuleId ? "Atualizar" : "Adicionar"}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="flex space-x-2">
@@ -372,9 +602,9 @@ const CompanyTrainingPaths: React.FC = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {filteredPaths.map((path) => (
-              <Card key={path.id}>
+              <Card key={path.id} className={viewingModules === path.id ? "border-primary" : ""}>
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
                     <div>
@@ -467,14 +697,64 @@ const CompanyTrainingPaths: React.FC = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full" variant={path.status === "active" ? "default" : "secondary"}>
-                    {path.status === "active" 
-                      ? "Gerenciar Módulos" 
-                      : path.status === "draft" 
-                      ? "Editar Conteúdo" 
-                      : "Restaurar Trilha"}
+                  <Button 
+                    className="w-full" 
+                    onClick={() => handleOpenModules(path.id)}
+                    variant={viewingModules === path.id ? "secondary" : "default"}
+                  >
+                    {viewingModules === path.id ? "Fechar Módulos" : "Gerenciar Módulos"}
                   </Button>
                 </CardFooter>
+                {viewingModules === path.id && (
+                  <div className="px-6 pb-6">
+                    <div className="border rounded-md p-4 space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-medium">Módulos da Trilha</h3>
+                        <Button size="sm" variant="outline" onClick={() => handleAddModule(path.id)}>
+                          <Plus className="mr-1 h-4 w-4" /> Adicionar Módulo
+                        </Button>
+                      </div>
+                      
+                      {(!mockModules[path.id as keyof typeof mockModules] || mockModules[path.id as keyof typeof mockModules].length === 0) ? (
+                        <div className="text-center py-8 text-gray-500">
+                          <p>Esta trilha ainda não possui módulos.</p>
+                          <p className="text-sm mt-1">Clique em "Adicionar Módulo" para começar.</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {(mockModules[path.id as keyof typeof mockModules] || []).map((module, index) => (
+                            <div 
+                              key={module.id} 
+                              className="flex justify-between items-center p-3 border rounded-md bg-background hover:bg-accent"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                                  {index + 1}
+                                </div>
+                                <div>
+                                  <p className="font-medium">{module.title}</p>
+                                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                                    <span>{translateModuleType(module.type)}</span>
+                                    <span>•</span>
+                                    <span>{module.duration}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Button variant="ghost" size="sm" onClick={() => handleEditModule(path.id, module.id)}>
+                                  <Edit size={16} />
+                                </Button>
+                                <Button variant="ghost" size="sm" className="text-red-500" onClick={() => handleDeleteModule(path.id, module.id)}>
+                                  <Trash size={16} />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </Card>
             ))}
           </div>

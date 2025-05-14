@@ -30,7 +30,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Search, Edit, Trash, Mail } from "lucide-react";
 
 // Dados simulados para colaboradores
@@ -92,21 +91,11 @@ const mockCollaborators = [
   },
 ];
 
-// Trilhas de treinamento simuladas
-const mockTrainingPaths = [
-  { id: 1, title: "Fundamentos de Vendas" },
-  { id: 2, title: "Técnicas Avançadas de Objeções" },
-  { id: 3, title: "Vendas Consultivas B2B" },
-  { id: 4, title: "Negociação e Fechamento" }
-];
-
 interface CollaboratorFormData {
   name: string;
   email: string;
   phone: string;
   role: "admin" | "collaborator";
-  questionCount: number;
-  trainingPaths: number[];
 }
 
 const CompanyCollaborators: React.FC = () => {
@@ -114,14 +103,11 @@ const CompanyCollaborators: React.FC = () => {
   const { sendInvite } = useAuth();
   const [collaborators, setCollaborators] = useState(mockCollaborators);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTrainingPaths, setSelectedTrainingPaths] = useState<number[]>([]);
   const [formData, setFormData] = useState<CollaboratorFormData>({
     name: "",
     email: "",
     phone: "",
-    role: "collaborator",
-    questionCount: 10,
-    trainingPaths: []
+    role: "collaborator"
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -134,23 +120,6 @@ const CompanyCollaborators: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleTrainingPathToggle = (pathId: number) => {
-    setSelectedTrainingPaths(prev => {
-      if (prev.includes(pathId)) {
-        return prev.filter(id => id !== pathId);
-      } else {
-        return [...prev, pathId];
-      }
-    });
-    
-    setFormData(prev => ({
-      ...prev,
-      trainingPaths: prev.trainingPaths.includes(pathId) 
-        ? prev.trainingPaths.filter(id => id !== pathId)
-        : [...prev.trainingPaths, pathId]
-    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -167,10 +136,7 @@ const CompanyCollaborators: React.FC = () => {
                   name: formData.name,
                   email: formData.email,
                   phone: formData.phone,
-                  role: formData.role,
-                  trainingPaths: formData.trainingPaths.map(id => 
-                    mockTrainingPaths.find(path => path.id === id)?.title || ""
-                  )
+                  role: formData.role
                 }
               : collab
           )
@@ -181,10 +147,7 @@ const CompanyCollaborators: React.FC = () => {
         });
       } else {
         // Adicionar novo colaborador através de convite
-        const selectedPathTitles = formData.trainingPaths.map(id => 
-          mockTrainingPaths.find(path => path.id === id)?.title || "");
-        
-        await sendInvite(formData.email, formData.role, selectedPathTitles);
+        await sendInvite(formData.email, formData.role, []);
         
         // Adicionar à lista simulada
         const newCollaborator = {
@@ -196,7 +159,7 @@ const CompanyCollaborators: React.FC = () => {
           phone: formData.phone,
           status: "pending",
           joinedDate: new Date().toISOString().split("T")[0],
-          trainingPaths: selectedPathTitles
+          trainingPaths: []
         };
         
         setCollaborators([...collaborators, newCollaborator]);
@@ -224,32 +187,20 @@ const CompanyCollaborators: React.FC = () => {
       name: "",
       email: "",
       phone: "",
-      role: "collaborator",
-      questionCount: 10,
-      trainingPaths: []
+      role: "collaborator"
     });
-    setSelectedTrainingPaths([]);
     setEditingId(null);
   };
 
   const handleEdit = (id: string) => {
     const collaborator = collaborators.find((c) => c.id === id);
     if (collaborator) {
-      // Mapear nomes de trilhas para IDs
-      const pathIds = collaborator.trainingPaths.map(pathName => {
-        const path = mockTrainingPaths.find(p => p.title === pathName);
-        return path ? path.id : -1;
-      }).filter(id => id !== -1);
-      
       setFormData({
         name: collaborator.name,
         email: collaborator.email,
         phone: collaborator.phone || "",
-        role: collaborator.role as "admin" | "collaborator",
-        questionCount: 10,
-        trainingPaths: pathIds
+        role: collaborator.role as "admin" | "collaborator"
       });
-      setSelectedTrainingPaths(pathIds);
       setEditingId(id);
       setIsDialogOpen(true);
     }
@@ -376,46 +327,6 @@ const CompanyCollaborators: React.FC = () => {
                   </select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="questionCount">Quantidade de Perguntas por Simulação</Label>
-                  <Input
-                    id="questionCount"
-                    name="questionCount"
-                    type="number"
-                    min={1}
-                    max={50}
-                    value={formData.questionCount}
-                    onChange={handleInputChange}
-                    placeholder="10"
-                    required
-                  />
-                  <p className="text-sm text-gray-500">Número de perguntas geradas pela IA em cada simulação</p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Trilhas de Treinamento</Label>
-                  <div className="border rounded-md p-3 space-y-2">
-                    {mockTrainingPaths.map(path => (
-                      <div key={path.id} className="flex items-center space-x-2">
-                        <Checkbox 
-                          id={`path-${path.id}`}
-                          checked={selectedTrainingPaths.includes(path.id)}
-                          onCheckedChange={() => handleTrainingPathToggle(path.id)}
-                        />
-                        <label 
-                          htmlFor={`path-${path.id}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          {path.title}
-                        </label>
-                      </div>
-                    ))}
-                    {mockTrainingPaths.length === 0 && (
-                      <p className="text-sm text-gray-500">Nenhuma trilha disponível</p>
-                    )}
-                  </div>
-                </div>
-
                 <DialogFooter>
                   <Button type="submit">
                     {editingId ? "Atualizar" : "Enviar Convite"}
@@ -451,7 +362,6 @@ const CompanyCollaborators: React.FC = () => {
                     <TableHead>Email</TableHead>
                     <TableHead>Função</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Trilhas</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -480,22 +390,6 @@ const CompanyCollaborators: React.FC = () => {
                           >
                             {translateStatus(collaborator.status)}
                           </span>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {collaborator.trainingPaths.length > 0 ? (
-                              collaborator.trainingPaths.map((path, index) => (
-                                <span 
-                                  key={index}
-                                  className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-blue-50 text-blue-700"
-                                >
-                                  {path}
-                                </span>
-                              ))
-                            ) : (
-                              <span className="text-gray-500 text-xs">Nenhuma</span>
-                            )}
-                          </div>
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">

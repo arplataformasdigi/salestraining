@@ -35,11 +35,8 @@ import { Label } from "@/components/ui/label";
 import { 
   Plus, 
   Search, 
-  Mail, 
-  Clock, 
-  CheckCircle, 
-  XCircle,
-  RefreshCw
+  Edit,
+  Clock
 } from "lucide-react";
 
 // Dados simulados para trilhas
@@ -50,8 +47,8 @@ const mockTrainingPaths = [
   { id: 4, title: "Negociação e Fechamento" }
 ];
 
-// Dados simulados para convites
-const mockInvites = [
+// Dados simulados para convites/treinamentos
+const mockTrainings = [
   {
     id: 1,
     email: "roberto.alves@exemplo.com",
@@ -59,7 +56,8 @@ const mockInvites = [
     role: "collaborator",
     status: "pending",
     sentDate: "2023-05-10T10:30:00",
-    trainingPaths: ["Fundamentos de Vendas", "Negociação e Fechamento"]
+    trainingPaths: ["Fundamentos de Vendas", "Negociação e Fechamento"],
+    questionCount: 10
   },
   {
     id: 2,
@@ -69,7 +67,8 @@ const mockInvites = [
     status: "accepted",
     sentDate: "2023-05-08T15:45:00",
     acceptedDate: "2023-05-09T09:20:00",
-    trainingPaths: ["Vendas Consultivas B2B"]
+    trainingPaths: ["Vendas Consultivas B2B"],
+    questionCount: 15
   },
   {
     id: 3,
@@ -78,46 +77,54 @@ const mockInvites = [
     role: "collaborator",
     status: "expired",
     sentDate: "2023-04-25T14:30:00",
-    trainingPaths: ["Técnicas Avançadas de Objeções"]
+    trainingPaths: ["Técnicas Avançadas de Objeções"],
+    questionCount: 8
   },
   {
     id: 4,
     email: "carla.oliveira@exemplo.com",
     name: "Carla Oliveira",
     role: "collaborator",
-    status: "declined",
+    status: "completed",
     sentDate: "2023-05-05T11:15:00",
     declinedDate: "2023-05-06T10:30:00",
-    trainingPaths: ["Fundamentos de Vendas"]
+    trainingPaths: ["Fundamentos de Vendas"],
+    questionCount: 12
   }
 ];
 
-interface InviteFormData {
-  email: string;
-  name: string;
-  role: "admin" | "collaborator";
+// Dados simulados para colaboradores disponíveis
+const mockCollaborators = [
+  { id: 1, name: "Roberto Alves", email: "roberto.alves@exemplo.com", role: "collaborator" },
+  { id: 2, name: "Julia Santos", email: "julia.santos@exemplo.com", role: "admin" },
+  { id: 3, name: "Pedro Costa", email: "pedro.costa@exemplo.com", role: "collaborator" },
+  { id: 4, name: "Carla Oliveira", email: "carla.oliveira@exemplo.com", role: "collaborator" },
+  { id: 5, name: "Miguel Pereira", email: "miguel.p@exemplo.com", role: "collaborator" },
+];
+
+interface TrainingFormData {
+  collaboratorId: number;
   trainingPaths: number[];
   questionCount: number;
 }
 
-const CompanyInvites: React.FC = () => {
+const CompanyTrainings: React.FC = () => {
   const { toast } = useToast();
   const { sendInvite } = useAuth();
-  const [invites, setInvites] = useState(mockInvites);
+  const [trainings, setTrainings] = useState(mockTrainings);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTrainingPaths, setSelectedTrainingPaths] = useState<number[]>([]);
-  const [formData, setFormData] = useState<InviteFormData>({
-    email: "",
-    name: "",
-    role: "collaborator",
+  const [formData, setFormData] = useState<TrainingFormData>({
+    collaboratorId: 0,
     trainingPaths: [],
     questionCount: 10
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
-  const filteredInvites = invites.filter((invite) =>
-    invite.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    invite.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTrainings = trainings.filter((training) =>
+    training.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    training.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -146,28 +153,56 @@ const CompanyInvites: React.FC = () => {
     e.preventDefault();
     
     try {
+      // Encontrar o colaborador selecionado
+      const selectedCollaborator = mockCollaborators.find(c => c.id === formData.collaboratorId);
+      
+      if (!selectedCollaborator) {
+        toast({
+          title: "Erro",
+          description: "Selecione um colaborador válido.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Obter os nomes das trilhas selecionadas
       const selectedPathTitles = formData.trainingPaths.map(id => 
         mockTrainingPaths.find(path => path.id === id)?.title || "");
       
-      await sendInvite(formData.email, formData.role, selectedPathTitles);
-      
-      // Adicionar à lista simulada
-      const newInvite = {
-        id: Date.now(),
-        email: formData.email,
-        name: formData.name,
-        role: formData.role,
-        status: "pending",
-        sentDate: new Date().toISOString(),
-        trainingPaths: selectedPathTitles
-      };
-      
-      setInvites([newInvite, ...invites]);
-      
-      toast({
-        title: "Convite enviado",
-        description: `Um email de convite foi enviado para ${formData.email}.`,
-      });
+      if (editingId) {
+        // Atualizar treinamento existente
+        setTrainings(trainings.map(training => 
+          training.id === editingId ? {
+            ...training,
+            trainingPaths: selectedPathTitles,
+            questionCount: Number(formData.questionCount)
+          } : training
+        ));
+        
+        toast({
+          title: "Treinamento atualizado",
+          description: `O treinamento para ${selectedCollaborator.name} foi atualizado com sucesso.`,
+        });
+      } else {
+        // Adicionar novo treinamento
+        const newTraining = {
+          id: Date.now(),
+          email: selectedCollaborator.email,
+          name: selectedCollaborator.name,
+          role: selectedCollaborator.role,
+          status: "pending",
+          sentDate: new Date().toISOString(),
+          trainingPaths: selectedPathTitles,
+          questionCount: Number(formData.questionCount)
+        };
+        
+        setTrainings([...trainings, newTraining]);
+        
+        toast({
+          title: "Treinamento adicionado",
+          description: `Um novo treinamento foi designado para ${selectedCollaborator.name}.`,
+        });
+      }
 
       // Resetar formulário e fechar diálogo
       resetForm();
@@ -175,7 +210,7 @@ const CompanyInvites: React.FC = () => {
     } catch (error) {
       toast({
         title: "Erro",
-        description: "Ocorreu um erro ao enviar o convite.",
+        description: "Ocorreu um erro ao processar sua solicitação.",
         variant: "destructive"
       });
     }
@@ -183,38 +218,37 @@ const CompanyInvites: React.FC = () => {
 
   const resetForm = () => {
     setFormData({
-      email: "",
-      name: "",
-      role: "collaborator",
+      collaboratorId: 0,
       trainingPaths: [],
       questionCount: 10
     });
     setSelectedTrainingPaths([]);
+    setEditingId(null);
   };
 
-  const handleResendInvite = (id: number) => {
-    const invite = invites.find(i => i.id === id);
-    if (invite) {
-      setInvites(invites.map(i => 
-        i.id === id 
-          ? { ...i, status: "pending", sentDate: new Date().toISOString() }
-          : i
-      ));
+  const handleEdit = (id: number) => {
+    const training = trainings.find(t => t.id === id);
+    if (training) {
+      // Encontrar o ID do colaborador pelo nome/email
+      const collaborator = mockCollaborators.find(c => 
+        c.name === training.name && c.email === training.email
+      );
       
-      toast({
-        title: "Convite reenviado",
-        description: `Um novo convite foi enviado para ${invite.email}.`,
+      // Mapear nomes de trilhas para IDs
+      const pathIds = training.trainingPaths.map(pathName => {
+        const path = mockTrainingPaths.find(p => p.title === pathName);
+        return path ? path.id : -1;
+      }).filter(id => id !== -1);
+      
+      setFormData({
+        collaboratorId: collaborator?.id || 0,
+        trainingPaths: pathIds,
+        questionCount: training.questionCount || 10
       });
+      setSelectedTrainingPaths(pathIds);
+      setEditingId(id);
+      setIsDialogOpen(true);
     }
-  };
-
-  const handleDeleteInvite = (id: number) => {
-    const invite = invites.find(i => i.id === id);
-    setInvites(invites.filter(i => i.id !== id));
-    toast({
-      title: "Convite removido",
-      description: `O convite para ${invite?.email} foi removido.`,
-    });
   };
 
   const statusColor = (status: string) => {
@@ -222,9 +256,9 @@ const CompanyInvites: React.FC = () => {
       case "pending":
         return "bg-yellow-100 text-yellow-800";
       case "accepted":
+        return "bg-blue-100 text-blue-800";
+      case "completed":
         return "bg-green-100 text-green-800";
-      case "declined":
-        return "bg-red-100 text-red-800";
       case "expired":
         return "bg-gray-100 text-gray-800";
       default:
@@ -238,8 +272,8 @@ const CompanyInvites: React.FC = () => {
         return "pendente";
       case "accepted":
         return "aceito";
-      case "declined":
-        return "recusado";
+      case "completed":
+        return "concluído";
       case "expired":
         return "expirado";
       default:
@@ -251,7 +285,7 @@ const CompanyInvites: React.FC = () => {
     <CompanyLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Gerenciar Convites</h1>
+          <h1 className="text-2xl font-bold">Adicionar Treinamentos</h1>
 
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open);
@@ -259,54 +293,37 @@ const CompanyInvites: React.FC = () => {
           }}>
             <DialogTrigger asChild>
               <Button>
-                <Plus className="mr-2 h-4 w-4" /> Novo Convite
+                <Plus className="mr-2 h-4 w-4" /> Adicionar
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Enviar Novo Convite</DialogTitle>
+                <DialogTitle>
+                  {editingId ? "Editar Treinamento" : "Adicionar Novo Treinamento"}
+                </DialogTitle>
                 <DialogDescription>
-                  Preencha os detalhes para convidar um novo usuário para a plataforma.
+                  {editingId
+                    ? "Edite as informações do treinamento."
+                    : "Selecione um colaborador e as trilhas de treinamento."}
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Nome Completo</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    placeholder="João Silva"
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email">Endereço de Email</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="joao.silva@exemplo.com"
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="role">Função</Label>
+                  <Label htmlFor="collaboratorId">Colaborador</Label>
                   <select
-                    id="role"
-                    name="role"
+                    id="collaboratorId"
+                    name="collaboratorId"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                    value={formData.role}
+                    value={formData.collaboratorId}
                     onChange={handleInputChange}
                     required
                   >
-                    <option value="collaborator">Colaborador</option>
-                    <option value="admin">Administrador</option>
+                    <option value="0">Selecione um colaborador</option>
+                    {mockCollaborators.map(collab => (
+                      <option key={collab.id} value={collab.id}>
+                        {collab.name} ({collab.email})
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -349,7 +366,7 @@ const CompanyInvites: React.FC = () => {
 
                 <DialogFooter>
                   <Button type="submit">
-                    Enviar Convite
+                    {editingId ? "Atualizar" : "Adicionar"}
                   </Button>
                 </DialogFooter>
               </form>
@@ -359,9 +376,9 @@ const CompanyInvites: React.FC = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Histórico de Convites</CardTitle>
+            <CardTitle>Treinamentos Designados</CardTitle>
             <CardDescription>
-              Gerencie e monitore os convites enviados aos usuários.
+              Gerencie e monitore os treinamentos designados aos colaboradores.
             </CardDescription>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
@@ -378,66 +395,49 @@ const CompanyInvites: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Nome / Email</TableHead>
+                    <TableHead>Colaborador</TableHead>
                     <TableHead>Função</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Data de Envio</TableHead>
+                    <TableHead>Perguntas</TableHead>
                     <TableHead>Trilhas</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredInvites.length === 0 ? (
+                  {filteredTrainings.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                        Nenhum convite encontrado
+                        Nenhum treinamento encontrado
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredInvites.map((invite) => (
-                      <TableRow key={invite.id}>
+                    filteredTrainings.map((training) => (
+                      <TableRow key={training.id}>
                         <TableCell>
                           <div>
-                            <div className="font-medium">{invite.name}</div>
-                            <div className="text-sm text-gray-500">{invite.email}</div>
+                            <div className="font-medium">{training.name}</div>
+                            <div className="text-sm text-gray-500">{training.email}</div>
                           </div>
                         </TableCell>
                         <TableCell className="capitalize">
-                          {invite.role === "collaborator" ? "Colaborador" : "Administrador"}
+                          {training.role === "collaborator" ? "Colaborador" : "Administrador"}
                         </TableCell>
                         <TableCell>
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor(
-                              invite.status
+                              training.status
                             )}`}
                           >
-                            {translateStatus(invite.status)}
+                            {translateStatus(training.status)}
                           </span>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center">
-                            <Clock size={14} className="mr-1 text-gray-400" />
-                            <span className="text-sm">
-                              {new Date(invite.sentDate).toLocaleDateString('pt-BR')}
-                            </span>
-                          </div>
-                          {invite.status === "accepted" && invite.acceptedDate && (
-                            <div className="text-xs text-green-600 flex items-center mt-1">
-                              <CheckCircle size={12} className="mr-1" />
-                              Aceito em {new Date(invite.acceptedDate).toLocaleDateString('pt-BR')}
-                            </div>
-                          )}
-                          {invite.status === "declined" && invite.declinedDate && (
-                            <div className="text-xs text-red-600 flex items-center mt-1">
-                              <XCircle size={12} className="mr-1" />
-                              Recusado em {new Date(invite.declinedDate).toLocaleDateString('pt-BR')}
-                            </div>
-                          )}
+                          {training.questionCount || 10}
                         </TableCell>
                         <TableCell>
-                          {invite.trainingPaths.length > 0 ? (
+                          {training.trainingPaths.length > 0 ? (
                             <div className="flex flex-wrap gap-1">
-                              {invite.trainingPaths.map((path, index) => (
+                              {training.trainingPaths.map((path, index) => (
                                 <span 
                                   key={index}
                                   className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-blue-50 text-blue-700"
@@ -452,24 +452,12 @@ const CompanyInvites: React.FC = () => {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            {(invite.status === "pending" || invite.status === "expired") && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleResendInvite(invite.id)}
-                                title="Reenviar Convite"
-                              >
-                                <RefreshCw size={16} />
-                              </Button>
-                            )}
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleDeleteInvite(invite.id)}
-                              className="text-red-500 hover:text-red-700"
-                              title="Remover Convite"
+                              onClick={() => handleEdit(training.id)}
                             >
-                              <XCircle size={16} />
+                              <Edit size={16} />
                             </Button>
                           </div>
                         </TableCell>
@@ -481,9 +469,10 @@ const CompanyInvites: React.FC = () => {
             </div>
           </CardContent>
           <CardFooter>
-            <p className="text-sm text-gray-500">
-              Os convites expiram após 7 dias se não forem aceitos.
-            </p>
+            <div className="flex items-center text-sm text-gray-500">
+              <Clock size={14} className="mr-1" />
+              <span>Os treinamentos expiram após 30 dias se não forem concluídos.</span>
+            </div>
           </CardFooter>
         </Card>
       </div>
@@ -491,4 +480,4 @@ const CompanyInvites: React.FC = () => {
   );
 };
 
-export default CompanyInvites;
+export default CompanyTrainings;
