@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import CompanyLayout from "@/components/layouts/CompanyLayout";
 import { useToast } from "@/hooks/use-toast";
@@ -39,6 +38,8 @@ import {
   Users,
   MessageSquare,
   Sparkles,
+  FileText,
+  Upload,
 } from "lucide-react";
 
 // Dados simulados para cenários
@@ -132,6 +133,8 @@ interface ScenarioFormData {
   type: "cold-call" | "objection-handling" | "discovery" | "closing";
   difficulty: "beginner" | "intermediate" | "advanced";
   context: string;
+  questionCount: number;
+  dataFile: File | null;
 }
 
 const CompanyAISimulations: React.FC = () => {
@@ -145,7 +148,9 @@ const CompanyAISimulations: React.FC = () => {
     description: "",
     type: "cold-call",
     difficulty: "intermediate",
-    context: ""
+    context: "",
+    questionCount: 10,
+    dataFile: null
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -155,6 +160,11 @@ const CompanyAISimulations: React.FC = () => {
 
   const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    setFormData((prev) => ({ ...prev, dataFile: file || null }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -180,7 +190,9 @@ const CompanyAISimulations: React.FC = () => {
       description: "",
       type: "cold-call",
       difficulty: "intermediate",
-      context: ""
+      context: "",
+      questionCount: 10,
+      dataFile: null
     });
   };
 
@@ -308,6 +320,37 @@ const CompanyAISimulations: React.FC = () => {
                 </div>
                 
                 <div className="space-y-2">
+                  <Label htmlFor="questionCount">Quantidade de Perguntas</Label>
+                  <Input
+                    id="questionCount"
+                    name="questionCount"
+                    type="number"
+                    min="5"
+                    max="50"
+                    value={formData.questionCount}
+                    onChange={handleInputChange}
+                    placeholder="10"
+                    required
+                  />
+                  <p className="text-sm text-gray-500">Número de perguntas a serem geradas pela IA</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="dataFile">Arquivo de Dados (CSV ou PDF)</Label>
+                  <div className="flex items-center">
+                    <Input
+                      id="dataFile"
+                      name="dataFile"
+                      type="file"
+                      onChange={handleFileChange}
+                      accept=".csv,.pdf"
+                      className="flex-1"
+                    />
+                  </div>
+                  <p className="text-sm text-gray-500">Carregue um arquivo para usar como base de dados para o cenário</p>
+                </div>
+                
+                <div className="space-y-2">
                   <Label htmlFor="context">Contexto do Cenário</Label>
                   <Textarea
                     id="context"
@@ -394,7 +437,7 @@ const CompanyAISimulations: React.FC = () => {
                   <CardFooter>
                     <Button variant="default" className="w-full">
                       <Play size={16} className="mr-2" />
-                      Executar Simulação
+                      Criar Simulação
                     </Button>
                   </CardFooter>
                 </Card>
@@ -482,6 +525,37 @@ const CompanyAISimulations: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="apiKey">Chave API OpenAI</Label>
+                  <Input
+                    id="apiKey"
+                    type="password"
+                    placeholder="sk-..."
+                    className="max-w-[300px]"
+                  />
+                  <p className="text-sm text-gray-500">
+                    Sua chave API da OpenAI para gerar simulações
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="temperature">Temperatura do Modelo</Label>
+                  <div className="flex items-center gap-4">
+                    <Input
+                      id="temperature"
+                      type="number"
+                      min="0"
+                      max="2"
+                      step="0.1"
+                      defaultValue="0.7"
+                      className="max-w-[100px]"
+                    />
+                    <span className="text-sm text-gray-500">
+                      Controla a aleatoriedade das respostas (0-2, menor valor = mais previsível)
+                    </span>
+                  </div>
+                </div>
+                
                 <div className="space-y-2">
                   <Label htmlFor="defaultQuestions">Número Padrão de Perguntas</Label>
                   <div className="flex items-center gap-4">
