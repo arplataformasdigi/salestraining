@@ -43,6 +43,7 @@ import {
   LineChart,
   Sparkles,
   MessageSquare,
+  ChartBar,
 } from "lucide-react";
 
 // Dados simulados para trilhas
@@ -630,6 +631,7 @@ const CompanyTrainingPaths: React.FC = () => {
             variant={filter === "results" ? "default" : "outline"}
             onClick={() => setFilter("results")}
           >
+            <ChartBar className="mr-1 h-4 w-4" />
             Resultados
           </Button>
         </div>
