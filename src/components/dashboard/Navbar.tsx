@@ -1,33 +1,29 @@
-
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Bell, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
 const Navbar: React.FC = () => {
-  const { user, logout } = useAuth();
-  const { toast } = useToast();
-
+  const {
+    user,
+    logout
+  } = useAuth();
+  const {
+    toast
+  } = useToast();
   const handleLogout = () => {
     logout();
     toast({
       title: "Logout realizado com sucesso",
-      description: "Você saiu da sua conta.",
+      description: "Você saiu da sua conta."
     });
   };
-
-  return (
-    <header className="bg-white border-b border-gray-200 py-4 px-6">
+  return <header className="bg-white border-b border-gray-200 py-4 px-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <h1 className="text-lg font-semibold hidden md:block">SalesTrainAI</h1>
+          <h1 className="text-lg font-semibold hidden md:block">SalesTraining</h1>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            <input
-              type="text"
-              placeholder="Pesquisar..."
-              className="pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
-            />
+            <input type="text" placeholder="Pesquisar..." className="pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" />
           </div>
         </div>
 
@@ -45,8 +41,7 @@ const Navbar: React.FC = () => {
             <div className="hidden md:block text-right">
               <p className="text-sm font-medium">{user?.name}</p>
               <p className="text-xs text-gray-500 capitalize">
-                {user?.role === "admin" ? "Administrador" : 
-                 user?.role === "manager" ? "Gerente" : "Colaborador"}
+                {user?.role === "admin" ? "Administrador" : user?.role === "manager" ? "Gerente" : "Colaborador"}
               </p>
             </div>
 
@@ -63,10 +58,7 @@ const Navbar: React.FC = () => {
                   <a href="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Configurações
                   </a>
-                  <button 
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                  >
+                  <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
                     Sair
                   </button>
                 </div>
@@ -75,8 +67,6 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       </div>
-    </header>
-  );
+    </header>;
 };
-
 export default Navbar;
