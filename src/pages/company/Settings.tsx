@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import CompanyLayout from "@/components/layouts/CompanyLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -13,12 +13,21 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogOut, Shield } from "lucide-react";
+import { LogOut, Shield, TwoFactorAuthentication } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { 
+  Dialog,
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 
 const profileSchema = z.object({
   name: z.string().min(2, { message: "Nome deve ter pelo menos 2 caracteres" }),
@@ -45,6 +54,10 @@ type SecurityFormValues = z.infer<typeof securitySchema>;
 const CompanySettings: React.FC = () => {
   const { logout, user } = useAuth();
   const { toast } = useToast();
+  const [twoFactorDialogOpen, setTwoFactorDialogOpen] = useState(false);
+  const [twoFactorStep, setTwoFactorStep] = useState<'qrcode' | 'verify'>('qrcode');
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
 
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -90,6 +103,29 @@ const CompanySettings: React.FC = () => {
       title: "Senha alterada",
       description: "Sua senha foi alterada com sucesso.",
     });
+  };
+
+  const handleOpenTwoFactor = () => {
+    setTwoFactorStep('qrcode');
+    setTwoFactorDialogOpen(true);
+  };
+
+  const handleVerifyTwoFactor = () => {
+    if (verificationCode.length === 6) {
+      // This would call an API in a real implementation
+      setTwoFactorEnabled(true);
+      setTwoFactorDialogOpen(false);
+      toast({
+        title: "Autenticação de dois fatores ativada",
+        description: "Sua conta agora está protegida com autenticação de dois fatores.",
+      });
+    } else {
+      toast({
+        title: "Código inválido",
+        description: "Por favor, insira um código válido de 6 dígitos.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -230,7 +266,7 @@ const CompanySettings: React.FC = () => {
                   Atualize sua senha e configurações de segurança
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-6">
                 <Form {...securityForm}>
                   <form onSubmit={securityForm.handleSubmit(onSecuritySubmit)} className="space-y-4">
                     <FormField
@@ -278,6 +314,35 @@ const CompanySettings: React.FC = () => {
                     <Button type="submit">Alterar Senha</Button>
                   </form>
                 </Form>
+
+                <Separator className="my-6" />
+
+                <div className="space-y-6">
+                  <CardHeader className="px-0">
+                    <CardTitle>Privacidade & Segurança</CardTitle>
+                    <CardDescription>
+                      Gerencie configurações de privacidade e segurança
+                    </CardDescription>
+                  </CardHeader>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-start gap-3">
+                      <TwoFactorAuthentication className="h-5 w-5 text-gray-500 mt-0.5" />
+                      <div>
+                        <div className="font-medium">Autenticação de Dois Fatores</div>
+                        <p className="text-sm text-gray-500">
+                          Adicione uma camada extra de segurança à sua conta
+                        </p>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleOpenTwoFactor}
+                    >
+                      Configurar
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -300,6 +365,58 @@ const CompanySettings: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Two-Factor Authentication Dialog */}
+      <Dialog open={twoFactorDialogOpen} onOpenChange={setTwoFactorDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Autenticação de Dois Fatores</DialogTitle>
+            <DialogDescription>
+              {twoFactorStep === 'qrcode' 
+                ? "Escaneie o QR code abaixo com seu aplicativo autenticador." 
+                : "Digite o código de verificação do seu aplicativo autenticador."}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {twoFactorStep === 'qrcode' ? (
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <div className="border border-gray-300 p-4 rounded-md bg-white">
+                {/* This would be a real QR code in a real application */}
+                <div className="w-48 h-48 bg-gray-100 flex items-center justify-center">
+                  <Shield className="w-24 h-24 text-gray-400" />
+                </div>
+              </div>
+              <p className="text-sm text-gray-500 text-center">
+                Também pode digitar esta chave secreta no seu aplicativo:
+                <br />
+                <span className="font-mono bg-gray-100 px-2 py-1 rounded">ABCD EFGH IJKL MNOP</span>
+              </p>
+              <Button onClick={() => setTwoFactorStep('verify')}>Continuar</Button>
+            </div>
+          ) : (
+            <div className="flex flex-col space-y-4">
+              <div className="flex flex-col space-y-2 items-center">
+                <p className="text-sm text-gray-500">Digite o código de 6 dígitos do seu aplicativo autenticador</p>
+                <InputOTP maxLength={6} value={verificationCode} onChange={setVerificationCode}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+              
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setTwoFactorStep('qrcode')}>Voltar</Button>
+                <Button onClick={handleVerifyTwoFactor}>Verificar</Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </CompanyLayout>
   );
 };
