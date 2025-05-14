@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
   User, Users, Settings, 
-  FileText, Chart, Book,
+  FileText, LineChart, Book,
   ArrowLeft, ArrowRight
 } from "lucide-react";
 
@@ -15,7 +15,7 @@ const Sidebar: React.FC = () => {
   const isAdmin = user?.role === "admin" || user?.role === "manager";
 
   const navItems = [
-    { name: "Dashboard", path: "/dashboard", icon: Chart },
+    { name: "Dashboard", path: "/dashboard", icon: LineChart },
     ...(isAdmin 
       ? [{ name: "Collaborators", path: "/collaborators", icon: Users }] 
       : []

@@ -4,7 +4,7 @@ import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Chart as ChartIcon,
+  LineChart,
   Users,
   FileText,
   Book,
@@ -84,7 +84,7 @@ const Dashboard: React.FC = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Average Score</CardTitle>
-              <ChartIcon className="h-4 w-4 text-muted-foreground" />
+              <LineChart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{metrics.avgScore}%</div>
@@ -96,7 +96,7 @@ const Dashboard: React.FC = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Improvement Rate</CardTitle>
-              <ChartIcon className="h-4 w-4 text-muted-foreground" />
+              <LineChart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">+{metrics.improvementRate}%</div>
