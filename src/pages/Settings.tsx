@@ -1,4 +1,3 @@
-
 import React from "react";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,7 +14,6 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import {
   Bell,
-  Mail,
   Smartphone,
   Moon,
   Globe,
@@ -73,21 +71,6 @@ const Settings: React.FC = () => {
                         <div className="font-medium">Notificações no App</div>
                         <p className="text-sm text-gray-500">
                           Receba notificações dentro do aplicativo
-                        </p>
-                      </div>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-start gap-3">
-                      <Mail className="h-5 w-5 text-gray-500 mt-0.5" />
-                      <div>
-                        <div className="font-medium">Notificações por Email</div>
-                        <p className="text-sm text-gray-500">
-                          Receba atualizações e lembretes por email
                         </p>
                       </div>
                     </div>

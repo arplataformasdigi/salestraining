@@ -12,6 +12,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Collaborators from "./pages/Collaborators";
 import TrainingPaths from "./pages/TrainingPaths";
+import TrainingResults from "./pages/TrainingResults";
 import Simulations from "./pages/Simulations";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -23,6 +24,7 @@ import CompanyTrainingPaths from "./pages/company/TrainingPaths";
 import CompanyTrainings from "./pages/company/Invites";
 import CompanyAISimulations from "./pages/company/AISimulations";
 import CompanyRanking from "./pages/company/Ranking";
+import CompanySettings from "./pages/company/Settings";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/collaborators" element={<Collaborators />} />
             <Route path="/training-paths" element={<TrainingPaths />} />
+            <Route path="/training-results" element={<TrainingResults />} />
             <Route path="/simulations" element={<Simulations />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
@@ -51,6 +54,7 @@ const App = () => (
             <Route path="/empresa/convites" element={<CompanyTrainings />} />
             <Route path="/empresa/simulacoes" element={<CompanyAISimulations />} />
             <Route path="/empresa/ranking" element={<CompanyRanking />} />
+            <Route path="/empresa/configuracoes" element={<CompanySettings />} />
             
             {/* ADICIONE TODAS AS ROTAS PERSONALIZADAS ACIMA DA ROTA "*" */}
             <Route path="*" element={<NotFound />} />
