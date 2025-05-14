@@ -17,7 +17,7 @@ const CompanySidebar: React.FC = () => {
     { name: "Colaboradores", path: "/empresa/colaboradores", icon: Users },
     { name: "Trilhas de Treinamento", path: "/empresa/trilhas", icon: Book },
     { name: "Simulações IA", path: "/empresa/simulacoes", icon: Brain },
-    { name: "Convites", path: "/empresa/convites", icon: FileText },
+    { name: "Treinamentos Criados", path: "/empresa/convites", icon: FileText },
     { name: "Configurações", path: "/empresa/configuracoes", icon: Settings },
   ];
 

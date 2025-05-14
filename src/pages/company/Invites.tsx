@@ -461,6 +461,7 @@ const CompanyTrainings: React.FC = () => {
                     <TableHead>Função</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Perguntas</TableHead>
+                    <TableHead>Expiração</TableHead>
                     <TableHead>Trilhas</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
@@ -468,7 +469,7 @@ const CompanyTrainings: React.FC = () => {
                 <TableBody>
                   {filteredTrainings.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                      <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                         Nenhum treinamento encontrado
                       </TableCell>
                     </TableRow>
@@ -495,6 +496,9 @@ const CompanyTrainings: React.FC = () => {
                         </TableCell>
                         <TableCell>
                           {training.questionCount || 10}
+                        </TableCell>
+                        <TableCell>
+                          {training.expirationDays} dias
                         </TableCell>
                         <TableCell>
                           {training.trainingPaths.length > 0 ? (
