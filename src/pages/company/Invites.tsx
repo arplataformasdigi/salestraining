@@ -47,6 +47,16 @@ const mockTrainingPaths = [
   { id: 4, title: "Negociação e Fechamento" }
 ];
 
+// Dados simulados para simulações de IA
+const mockAISimulations = [
+  { id: 101, title: "Simulação de Atendimento ao Cliente" },
+  { id: 102, title: "Simulação de Objeção de Preço" },
+  { id: 103, title: "Simulação de Negociação B2B" }
+];
+
+// Combinando todas as opções de treinamento
+const allTrainingOptions = [...mockTrainingPaths, ...mockAISimulations];
+
 // Dados simulados para convites/treinamentos
 const mockTrainings = [
   {
@@ -57,7 +67,8 @@ const mockTrainings = [
     status: "pending",
     sentDate: "2023-05-10T10:30:00",
     trainingPaths: ["Fundamentos de Vendas", "Negociação e Fechamento"],
-    questionCount: 10
+    questionCount: 10,
+    expirationDays: 30
   },
   {
     id: 2,
@@ -68,7 +79,8 @@ const mockTrainings = [
     sentDate: "2023-05-08T15:45:00",
     acceptedDate: "2023-05-09T09:20:00",
     trainingPaths: ["Vendas Consultivas B2B"],
-    questionCount: 15
+    questionCount: 15,
+    expirationDays: 60
   },
   {
     id: 3,
@@ -78,7 +90,8 @@ const mockTrainings = [
     status: "expired",
     sentDate: "2023-04-25T14:30:00",
     trainingPaths: ["Técnicas Avançadas de Objeções"],
-    questionCount: 8
+    questionCount: 8,
+    expirationDays: 30
   },
   {
     id: 4,
@@ -89,7 +102,8 @@ const mockTrainings = [
     sentDate: "2023-05-05T11:15:00",
     declinedDate: "2023-05-06T10:30:00",
     trainingPaths: ["Fundamentos de Vendas"],
-    questionCount: 12
+    questionCount: 12,
+    expirationDays: 90
   }
 ];
 
@@ -106,6 +120,7 @@ interface TrainingFormData {
   collaboratorId: number;
   trainingPaths: number[];
   questionCount: number;
+  expirationDays: number;
 }
 
 const CompanyTrainings: React.FC = () => {
@@ -117,7 +132,8 @@ const CompanyTrainings: React.FC = () => {
   const [formData, setFormData] = useState<TrainingFormData>({
     collaboratorId: 0,
     trainingPaths: [],
-    questionCount: 10
+    questionCount: 10,
+    expirationDays: 30
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -166,8 +182,10 @@ const CompanyTrainings: React.FC = () => {
       }
       
       // Obter os nomes das trilhas selecionadas
-      const selectedPathTitles = formData.trainingPaths.map(id => 
-        mockTrainingPaths.find(path => path.id === id)?.title || "");
+      const selectedPathTitles = formData.trainingPaths.map(id => {
+        const path = allTrainingOptions.find(path => path.id === id);
+        return path?.title || "";
+      }).filter(title => title !== "");
       
       if (editingId) {
         // Atualizar treinamento existente
@@ -175,7 +193,8 @@ const CompanyTrainings: React.FC = () => {
           training.id === editingId ? {
             ...training,
             trainingPaths: selectedPathTitles,
-            questionCount: Number(formData.questionCount)
+            questionCount: Number(formData.questionCount),
+            expirationDays: Number(formData.expirationDays)
           } : training
         ));
         
@@ -193,7 +212,8 @@ const CompanyTrainings: React.FC = () => {
           status: "pending",
           sentDate: new Date().toISOString(),
           trainingPaths: selectedPathTitles,
-          questionCount: Number(formData.questionCount)
+          questionCount: Number(formData.questionCount),
+          expirationDays: Number(formData.expirationDays)
         };
         
         setTrainings([...trainings, newTraining]);
@@ -220,7 +240,8 @@ const CompanyTrainings: React.FC = () => {
     setFormData({
       collaboratorId: 0,
       trainingPaths: [],
-      questionCount: 10
+      questionCount: 10,
+      expirationDays: 30
     });
     setSelectedTrainingPaths([]);
     setEditingId(null);
@@ -236,14 +257,15 @@ const CompanyTrainings: React.FC = () => {
       
       // Mapear nomes de trilhas para IDs
       const pathIds = training.trainingPaths.map(pathName => {
-        const path = mockTrainingPaths.find(p => p.title === pathName);
+        const path = allTrainingOptions.find(p => p.title === pathName);
         return path ? path.id : -1;
       }).filter(id => id !== -1);
       
       setFormData({
         collaboratorId: collaborator?.id || 0,
         trainingPaths: pathIds,
-        questionCount: training.questionCount || 10
+        questionCount: training.questionCount || 10,
+        expirationDays: training.expirationDays || 30
       });
       setSelectedTrainingPaths(pathIds);
       setEditingId(id);
@@ -271,7 +293,7 @@ const CompanyTrainings: React.FC = () => {
       case "pending":
         return "pendente";
       case "accepted":
-        return "aceito";
+        return "em andamento";
       case "completed":
         return "concluído";
       case "expired":
@@ -344,6 +366,26 @@ const CompanyTrainings: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="expirationDays">Tempo para Expirar (dias)</Label>
+                  <select
+                    id="expirationDays"
+                    name="expirationDays"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    value={formData.expirationDays}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="30">30 dias</option>
+                    <option value="60">60 dias</option>
+                    <option value="90">90 dias</option>
+                    <option value="120">120 dias</option>
+                    <option value="150">150 dias</option>
+                    <option value="180">180 dias</option>
+                  </select>
+                  <p className="text-sm text-gray-500">Prazo para conclusão do treinamento</p>
+                </div>
+
+                <div className="space-y-2">
                   <Label>Trilhas de Treinamento</Label>
                   <div className="border rounded-md p-3 space-y-2 max-h-40 overflow-y-auto">
                     {mockTrainingPaths.map(path => (
@@ -361,6 +403,26 @@ const CompanyTrainings: React.FC = () => {
                         </label>
                       </div>
                     ))}
+                    
+                    {/* Opções de simulação de IA */}
+                    <div className="mt-2 pt-2 border-t">
+                      <p className="text-sm font-semibold mb-2">Simulações por IA</p>
+                      {mockAISimulations.map(sim => (
+                        <div key={sim.id} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`sim-${sim.id}`}
+                            checked={selectedTrainingPaths.includes(sim.id)}
+                            onCheckedChange={() => handleTrainingPathToggle(sim.id)}
+                          />
+                          <label 
+                            htmlFor={`sim-${sim.id}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {sim.title}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -471,7 +533,7 @@ const CompanyTrainings: React.FC = () => {
           <CardFooter>
             <div className="flex items-center text-sm text-gray-500">
               <Clock size={14} className="mr-1" />
-              <span>Os treinamentos expiram após 30 dias se não forem concluídos.</span>
+              <span>Os treinamentos expiram após o prazo configurado se não forem concluídos.</span>
             </div>
           </CardFooter>
         </Card>
