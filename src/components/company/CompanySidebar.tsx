@@ -25,34 +25,34 @@ const CompanySidebar: React.FC = () => {
 
   return (
     <div 
-      className={`bg-white border-r border-gray-200 transition-all duration-300 ${
+      className={`bg-sidebar transition-all duration-300 h-full ${
         collapsed ? "w-16" : "w-64"
       }`}
     >
       <div className="flex flex-col h-full">
-        <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
           {!collapsed && (
-            <h1 className="text-lg font-bold text-primary">SalesTrainAI</h1>
+            <h1 className="text-lg font-bold text-white">SalesTrainAI</h1>
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-1 rounded-full hover:bg-gray-100"
+            className="p-1 rounded-full text-white hover:bg-sidebar-accent"
           >
             {collapsed ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
           </button>
         </div>
 
         <nav className="flex-1 py-4">
-          <ul className="space-y-1">
+          <ul className="space-y-1 px-2">
             {navItems.map((item) => (
               <li key={item.path}>
                 <NavLink
                   to={item.path}
                   className={({ isActive }) => 
-                    `flex items-center px-4 py-3 ${
+                    `flex items-center px-4 py-3 rounded-md transition-colors ${
                       isActive 
-                        ? "bg-primary/10 text-primary border-r-2 border-primary" 
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-sidebar-accent text-white" 
+                        : "text-white/80 hover:bg-sidebar-accent/70 hover:text-white"
                     }`
                   }
                 >
@@ -66,15 +66,15 @@ const CompanySidebar: React.FC = () => {
           </ul>
         </nav>
 
-        <div className="p-4 border-t">
+        <div className="p-4 border-t border-sidebar-border">
           <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">
+            <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center text-white font-medium">
               {user?.name?.charAt(0).toUpperCase() || "E"}
             </div>
             {!collapsed && (
               <div className="ml-3 overflow-hidden">
-                <p className="text-sm font-medium truncate">{user?.name}</p>
-                <p className="text-xs text-gray-500 truncate">
+                <p className="text-sm font-medium text-white truncate">{user?.name}</p>
+                <p className="text-xs text-white/70 truncate">
                   {user?.companyName || "Empresa"}
                 </p>
               </div>
