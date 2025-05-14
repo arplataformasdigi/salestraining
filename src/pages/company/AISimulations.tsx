@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import CompanyLayout from "@/components/layouts/CompanyLayout";
 import { useToast } from "@/hooks/use-toast";
@@ -252,118 +253,120 @@ const CompanyAISimulations: React.FC = () => {
                 <Plus className="mr-2 h-4 w-4" /> Novo Cenário
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-lg">
               <DialogHeader>
                 <DialogTitle>Criar Novo Cenário</DialogTitle>
                 <DialogDescription>
                   Defina os detalhes do cenário de simulação de vendas.
                 </DialogDescription>
               </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Título</Label>
-                  <Input
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    placeholder="Cold Call para Produto SaaS"
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="description">Descrição</Label>
-                  <Textarea
-                    id="description"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    placeholder="Breve descrição do cenário de simulação..."
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="type">Tipo</Label>
-                  <Select 
-                    onValueChange={(value) => handleSelectChange("type", value)}
-                    defaultValue={formData.type}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cold-call">Cold Call</SelectItem>
-                      <SelectItem value="objection-handling">Tratamento de Objeções</SelectItem>
-                      <SelectItem value="discovery">Descoberta</SelectItem>
-                      <SelectItem value="closing">Fechamento</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="difficulty">Nível de Dificuldade</Label>
-                  <Select 
-                    onValueChange={(value) => handleSelectChange("difficulty", value)}
-                    defaultValue={formData.difficulty}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o nível de dificuldade" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="beginner">Iniciante</SelectItem>
-                      <SelectItem value="intermediate">Intermediário</SelectItem>
-                      <SelectItem value="advanced">Avançado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="questionCount">Quantidade de Perguntas</Label>
-                  <Input
-                    id="questionCount"
-                    name="questionCount"
-                    type="number"
-                    min="5"
-                    max="50"
-                    value={formData.questionCount}
-                    onChange={handleInputChange}
-                    placeholder="10"
-                    required
-                  />
-                  <p className="text-sm text-gray-500">Número de perguntas a serem geradas pela IA</p>
-                </div>
+              <form onSubmit={handleSubmit} className="space-y-3">
+                <div className="grid grid-cols-1 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="title">Título</Label>
+                    <Input
+                      id="title"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleInputChange}
+                      placeholder="Cold Call para Produto SaaS"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label htmlFor="description">Descrição</Label>
+                    <Textarea
+                      id="description"
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      placeholder="Breve descrição do cenário de simulação..."
+                      className="h-20"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label htmlFor="type">Tipo</Label>
+                      <Select 
+                        onValueChange={(value) => handleSelectChange("type", value)}
+                        defaultValue={formData.type}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cold-call">Cold Call</SelectItem>
+                          <SelectItem value="objection-handling">Tratamento de Objeções</SelectItem>
+                          <SelectItem value="discovery">Descoberta</SelectItem>
+                          <SelectItem value="closing">Fechamento</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <Label htmlFor="difficulty">Nível de Dificuldade</Label>
+                      <Select 
+                        onValueChange={(value) => handleSelectChange("difficulty", value)}
+                        defaultValue={formData.difficulty}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o nível" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="beginner">Iniciante</SelectItem>
+                          <SelectItem value="intermediate">Intermediário</SelectItem>
+                          <SelectItem value="advanced">Avançado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label htmlFor="questionCount">Quantidade de Perguntas</Label>
+                    <Input
+                      id="questionCount"
+                      name="questionCount"
+                      type="number"
+                      min="5"
+                      max="50"
+                      value={formData.questionCount}
+                      onChange={handleInputChange}
+                      placeholder="10"
+                      required
+                    />
+                    <p className="text-xs text-gray-500">Número de perguntas a serem geradas pela IA</p>
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="dataFile">Arquivo de Dados (CSV ou PDF)</Label>
-                  <div className="flex items-center">
+                  <div className="space-y-1">
+                    <Label htmlFor="dataFile">Arquivo de Dados (CSV ou PDF)</Label>
                     <Input
                       id="dataFile"
                       name="dataFile"
                       type="file"
                       onChange={handleFileChange}
                       accept=".csv,.pdf"
-                      className="flex-1"
+                    />
+                    <p className="text-xs text-gray-500">Carregue um arquivo para usar como base de dados para o cenário</p>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label htmlFor="context">Contexto do Cenário</Label>
+                    <Textarea
+                      id="context"
+                      name="context"
+                      value={formData.context}
+                      onChange={handleInputChange}
+                      placeholder="Descreva o contexto e situação para esta simulação..."
+                      className="h-24"
+                      required
                     />
                   </div>
-                  <p className="text-sm text-gray-500">Carregue um arquivo para usar como base de dados para o cenário</p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="context">Contexto do Cenário</Label>
-                  <Textarea
-                    id="context"
-                    name="context"
-                    value={formData.context}
-                    onChange={handleInputChange}
-                    placeholder="Descreva o contexto e situação para esta simulação..."
-                    className="min-h-[100px]"
-                    required
-                  />
                 </div>
 
-                <DialogFooter>
+                <DialogFooter className="pt-2">
                   <Button type="submit">
                     Criar Cenário
                   </Button>

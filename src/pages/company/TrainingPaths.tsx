@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import CompanyLayout from "@/components/layouts/CompanyLayout";
 import { useToast } from "@/hooks/use-toast";
@@ -41,6 +40,9 @@ import {
   CheckCircle,
   Users,
   Clock,
+  LineChart,
+  Sparkles,
+  MessageSquare,
 } from "lucide-react";
 
 // Dados simulados para trilhas
@@ -119,6 +121,43 @@ const mockModules = {
     { id: 403, title: "Simulação: Fechamento de Venda", type: "simulation", duration: "30 min" }
   ]
 };
+
+// Dados simulados para resultados de colaboradores
+const mockTrainingResults = [
+  {
+    id: 1,
+    name: "João Silva",
+    email: "joao.silva@exemplo.com",
+    trainingTitle: "Fundamentos de Vendas",
+    date: "2023-05-12T14:30:00",
+    score: 85,
+    duration: "3:45",
+    strengths: ["Abordagem ao Cliente", "Apresentação do Produto", "Escuta Ativa"],
+    improvements: ["Tratamento de Objeções", "Fechamento de Venda"]
+  },
+  {
+    id: 2,
+    name: "Maria Souza",
+    email: "maria.s@exemplo.com",
+    trainingTitle: "Técnicas Avançadas de Objeções",
+    date: "2023-05-11T10:15:00",
+    score: 72,
+    duration: "5:20",
+    strengths: ["Empatia", "Conhecimento do Produto"],
+    improvements: ["Negociação", "Diferenciação de Valor"]
+  },
+  {
+    id: 3,
+    name: "Carlos Oliveira",
+    email: "c.oliveira@exemplo.com",
+    trainingTitle: "Negociação e Fechamento",
+    date: "2023-05-10T16:45:00",
+    score: 92,
+    duration: "4:30",
+    strengths: ["Técnicas de Fechamento", "Negociação de Preço", "Criação de Urgência"],
+    improvements: ["Rapport Inicial"]
+  }
+];
 
 interface TrainingPathFormData {
   title: string;
@@ -587,9 +626,85 @@ const CompanyTrainingPaths: React.FC = () => {
           >
             Arquivadas
           </Button>
+          <Button 
+            variant={filter === "results" ? "default" : "outline"}
+            onClick={() => setFilter("results")}
+          >
+            Resultados
+          </Button>
         </div>
 
-        {filteredPaths.length === 0 ? (
+        {filter === "results" ? (
+          // Exibir resultados dos treinamentos
+          <Card>
+            <CardHeader>
+              <CardTitle>Resultados de Treinamentos Recentes</CardTitle>
+              <CardDescription>
+                Veja os resultados dos treinamentos realizados pelos colaboradores
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {mockTrainingResults.map((result) => (
+                  <Card key={result.id} className="border">
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="text-base">{result.name}</CardTitle>
+                          <CardDescription>{result.email}</CardDescription>
+                        </div>
+                        <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          result.score >= 90 ? 'bg-green-100 text-green-800' :
+                          result.score >= 75 ? 'bg-blue-100 text-blue-800' :
+                          'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {result.score}%
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pb-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-500">Treinamento</h4>
+                          <p className="mt-1 text-sm">{result.trainingTitle}</p>
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-500">Data e Duração</h4>
+                          <p className="mt-1 text-sm">
+                            {new Date(result.date).toLocaleDateString('pt-BR')} • {result.duration}
+                          </p>
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-medium text-green-600 flex items-center">
+                            <Sparkles size={14} className="mr-1" /> Pontos fortes
+                          </h4>
+                          <ul className="mt-1 text-sm list-disc list-inside">
+                            {result.strengths.map((strength, index) => (
+                              <li key={index}>{strength}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-medium text-amber-600 flex items-center">
+                            <MessageSquare size={14} className="mr-1" /> Oportunidades de melhoria
+                          </h4>
+                          <ul className="mt-1 text-sm list-disc list-inside">
+                            {result.improvements.map((improvement, index) => (
+                              <li key={index}>{improvement}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </CardContent>
+                    <CardFooter>
+                      <Button variant="outline" size="sm">Ver detalhes completos</Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ) : filteredPaths.length === 0 ? (
           <Card className="p-8 text-center">
             <CardContent>
               <Book className="mx-auto h-12 w-12 text-gray-400 mb-3" />
