@@ -5,7 +5,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { 
   Users, Settings, 
   FileText, LineChart, Book,
-  ArrowLeft, ArrowRight, Brain
+  ArrowLeft, ArrowRight, Brain,
+  Award
 } from "lucide-react";
 
 const CompanySidebar: React.FC = () => {
@@ -18,6 +19,7 @@ const CompanySidebar: React.FC = () => {
     { name: "Trilhas de Treinamento", path: "/empresa/trilhas", icon: Book },
     { name: "Simulações IA", path: "/empresa/simulacoes", icon: Brain },
     { name: "Treinamentos Criados", path: "/empresa/convites", icon: FileText },
+    { name: "Ranking", path: "/empresa/ranking", icon: Award },
     { name: "Configurações", path: "/empresa/configuracoes", icon: Settings },
   ];
 

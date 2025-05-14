@@ -22,6 +22,7 @@ import CompanyCollaborators from "./pages/company/Collaborators";
 import CompanyTrainingPaths from "./pages/company/TrainingPaths";
 import CompanyTrainings from "./pages/company/Invites";
 import CompanyAISimulations from "./pages/company/AISimulations";
+import CompanyRanking from "./pages/company/Ranking";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/empresa/trilhas" element={<CompanyTrainingPaths />} />
             <Route path="/empresa/convites" element={<CompanyTrainings />} />
             <Route path="/empresa/simulacoes" element={<CompanyAISimulations />} />
+            <Route path="/empresa/ranking" element={<CompanyRanking />} />
             
             {/* ADICIONE TODAS AS ROTAS PERSONALIZADAS ACIMA DA ROTA "*" */}
             <Route path="*" element={<NotFound />} />
